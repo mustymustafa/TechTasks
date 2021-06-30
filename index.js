@@ -1,7 +1,6 @@
 const fs = require('fs');
 
 
-
 //the csv-parse package from the node-csv is required to read CSV files
 const parse = require('csv-parse')
 const Papa = require('papaparse');
@@ -27,8 +26,10 @@ const parser = parse({columns: true}, (err,records) => {
     
 
 
-    var d = [];
-    const arr = ["a" , "b", "C"]
+
+    var d=[];
+        const arr = ["a" , "b", "c"]
+        const b = ["a;b", "e;d", "b;c"]
     const pep = [{
     name: 'Monica',
     age: 22,
@@ -39,13 +40,41 @@ const parser = parse({columns: true}, (err,records) => {
     gender: 'male'
 }]
     arr.map(i => {
-        pep.map(it => {
-            it[i] = i
-            d.push(...pep)
+       
+        
+
+        b.map(v => {
+            console.log(v)
+            if(v.match(i)){
+                //console.log('true')
+                pep.forEach(it => {it[i] = true})
+            
+            } else {
+                //console.log('false')
+              pep.forEach(it => {it[i] = false})
+            }
         })
+       
+               d.push(pep)
 
     })
-//console.log(d[0])
+console.log(d)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     
   
     initialData = records;
@@ -87,54 +116,42 @@ const parser = parse({columns: true}, (err,records) => {
 
     //add new headers
     headerArray.push(...itemArray)
-    //console.log(ColInQuestionData.length)
-
+  
 
    
     itemArray.map(i => {
+
            ColInQuestionData.map(item => {
-       // const b = ColInQuestionData.includes(i)
+  
        if(item.match(i)){
            //console.log('1')
-        initialData.map(it => {
-            it[i] = '1'
-            data.push(...initialData)
-        })
+
+        initialData.forEach(v => {v[i] = '1'})
+        data.push(initialData)
      
         
-        //newBodyData.push('1')
-         //data = records.map(el => ({...el, [i]: '1'}))
+ 
        } else {
         //console.log('2')
-          initialData.map(it => {
-            it[i] = '2'
-            data.push(...initialData)
-        })
+
+         initialData.forEach(v => {v[i] = '2'})
+        data.push(initialData)
      
-        //newBodyData.push('2')
-        //data = records.map(el => ({...el, [i]: '1'}))
+    
        }
-       //console.log(item + '********')
-    })
-    //console.log(i + '===================================')
+    
     })
 
-    //console.log(data)
+    })
 
-    //check if book exists
-
-    //append data
-
-    //bodyData.push(...newBodyData)
-
-    //console.log(bodyData)
+  
 
  
-    //data = [headerArray]
-    const csv = Papa.unparse(data);
-    //console.log(csv)
 
-    //console.log(data)
+    const csv = Papa.unparse(initialData);
+
+
+    //console.log(initialData)
 
     fs.createWriteStream(__dirname+'/task-output.csv').write(csv)
 
