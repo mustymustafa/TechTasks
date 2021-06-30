@@ -1,19 +1,16 @@
 const fs = require('fs');
-const express = require('express');
-const app = express();
 
-const http = require('http').createServer(app);
 
 
 //the csv-parse package from the node-csv is required to read CSV files
 const parse = require('csv-parse')
 const Papa = require('papaparse');
-const csv = require('fast-csv')
 
 
 
-var data = [];
-//
+
+
+
 const parser = parse({columns: true}, (err,records) => {
     var bodyData = [];
 
@@ -25,18 +22,46 @@ const parser = parse({columns: true}, (err,records) => {
 
     var ColInQuestionData = [];
 
+    var initialData = [];
+    var data = [];
     
+
+
+    var d = [];
+    const arr = ["a" , "b", "C"]
+    const pep = [{
+    name: 'Monica',
+    age: 22,
+    gender: 'female'
+}, {
+    name: 'Moni',
+    age: 23,
+    gender: 'male'
+}]
+    arr.map(i => {
+        pep.map(it => {
+            it[i] = i
+            d.push(...pep)
+        })
+
+    })
+//console.log(d[0])
     
   
-    //console.log(records)
+    initialData = records;
+
       records.map(item => {
 
         //console.log(Object.keys(item))
         //console.log(Object.values(item))
         const body =  Object.values(item)
 
+      
+        
         //save body data
         bodyData.push(...body)
+          //console.log(bodyData)
+
 
         const values = Object.values(item)[Object.values(item).length-1]
         //console.log(values);
@@ -64,31 +89,56 @@ const parser = parse({columns: true}, (err,records) => {
     headerArray.push(...itemArray)
     //console.log(ColInQuestionData.length)
 
+
+   
     itemArray.map(i => {
            ColInQuestionData.map(item => {
        // const b = ColInQuestionData.includes(i)
        if(item.match(i)){
-        //console.log('1')
-        newBodyData.push('1')
+           //console.log('1')
+        initialData.map(it => {
+            it[i] = '1'
+            data.push(...initialData)
+        })
+     
+        
+        //newBodyData.push('1')
+         //data = records.map(el => ({...el, [i]: '1'}))
        } else {
-        newBodyData.push('2')
+        //console.log('2')
+          initialData.map(it => {
+            it[i] = '2'
+            data.push(...initialData)
+        })
+     
+        //newBodyData.push('2')
+        //data = records.map(el => ({...el, [i]: '1'}))
        }
        //console.log(item + '********')
     })
-   // console.log(i + '===================================')
+    //console.log(i + '===================================')
     })
- 
+
+    //console.log(data)
 
     //check if book exists
 
     //append data
 
-    bodyData.push(...newBodyData)
+    //bodyData.push(...newBodyData)
+
     //console.log(bodyData)
 
-    data = [headerArray, bodyData]
+ 
+    //data = [headerArray]
     const csv = Papa.unparse(data);
-    console.log(data)
+    //console.log(csv)
+
+    //console.log(data)
+
+    fs.createWriteStream(__dirname+'/task-output.csv').write(csv)
+
+
 
  
 })
@@ -98,21 +148,3 @@ const parser = parse({columns: true}, (err,records) => {
 fs.createReadStream(__dirname+'/task-data.csv').pipe(parser);
 
 
-
-
-app.use("/public", express.static(__dirname + "/public"));
-
-
-//start server
-http.listen(3000, () => {
-    console.log("server connected")
-
-    app.get("/", (req, res) => {
-
-        const ws = fs.createWriteStream("public/task-output.csv");
-        csv.write(data, {headers: true}).on("finish", () => {
-            res.send("send");
-        })
-        
-    })
-})
